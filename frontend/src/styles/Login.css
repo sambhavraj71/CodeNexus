@@ -1,0 +1,294 @@
+/* Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 460px;
+    margin: 0 auto;
+}
+
+.auth-card {
+    background: rgba(255, 255, 255, 0.13);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 28px;
+    padding: 40px 35px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12), 0 8px 16px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.auth-card h2 {
+    text-align: center;
+    color: #ffffff;
+    margin: 18px 0 28px 0;
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* ----- Tabs ----- */
+.auth-tabs {
+    display: flex;
+    background: rgba(255, 255, 255, 0.35);
+    border-radius: 14px;
+    overflow: hidden;
+    padding: 4px;
+    gap: 4px;
+}
+
+.auth-tabs button {
+    flex: 1;
+    border: none;
+    padding: 13px 10px;
+    background: transparent;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 11px;
+    transition: all 0.25s ease;
+    color: #1a2a3a;
+    letter-spacing: 0.3px;
+}
+
+.auth-tabs button.active {
+    background: #ffffff;
+    color: #007bff;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.25);
+}
+
+.auth-tabs button:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.35);
+    color: #0a1a2a;
+}
+
+.auth-tabs button:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+}
+
+/* ----- Inputs ----- */
+.auth-card input {
+    width: 100%;
+    padding: 14px 18px;
+    border: none;
+    outline: none;
+    border-radius: 14px;
+    margin-top: 18px;
+    font-size: 15px;
+    background: #ffffff;
+    color: #1e2a3a;
+    transition: box-shadow 0.2s, transform 0.15s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+.auth-card input:focus {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5), 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: scale(1.01);
+}
+
+.auth-card input::placeholder {
+    color: #8a9aa8;
+    font-weight: 400;
+    opacity: 0.7;
+}
+
+/* ----- Password box (relative) ----- */
+.password-box {
+    position: relative;
+    width: 100%;
+}
+
+.password-box input {
+    padding-right: 52px;
+}
+
+/* toggle icon – fixed alignment */
+.toggle-password {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 20px;
+    color: #4a5a6a;
+    user-select: none;
+    transition: color 0.2s;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: transparent;
+}
+
+.toggle-password:hover {
+    color: #007bff;
+    background: rgba(0, 123, 255, 0.08);
+}
+
+/* ----- Submit button ----- */
+.submit-btn {
+    width: 100%;
+    margin-top: 28px;
+    padding: 15px;
+    border: none;
+    border-radius: 14px;
+    background: #007bff;
+    color: white;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 6px 18px rgba(0, 123, 255, 0.3);
+    letter-spacing: 0.4px;
+}
+
+.submit-btn:hover {
+    background: #0056d6;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 28px rgba(0, 123, 255, 0.35);
+}
+
+.submit-btn:active {
+    transform: translateY(0px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.25);
+}
+
+.submit-btn:focus-visible {
+    outline: 3px solid rgba(255, 255, 255, 0.7);
+    outline-offset: 2px;
+}
+
+/* ----- Switch text (toggle login/register) ----- */
+.switch-text {
+    margin-top: 28px;
+    text-align: center;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 400;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.switch-text span {
+    color: #f9f871;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+    padding: 0 4px;
+    border-bottom: 2px solid transparent;
+}
+
+.switch-text span:hover {
+    color: #fff9b0;
+    border-bottom-color: #f9f871;
+    text-decoration: none;
+}
+
+/* ----- Footer ----- */
+.footer {
+    margin-top: 28px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 13px;
+    letter-spacing: 0.3px;
+}
+
+.footer a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px dotted rgba(255, 255, 255, 0.3);
+    transition: 0.2s;
+}
+
+.footer a:hover {
+    color: #f9f871;
+    border-bottom-color: #f9f871;
+}
+
+/* ----- Responsive (mobile first) ----- */
+@media (max-width: 500px) {
+    .auth-card {
+        padding: 28px 20px;
+        border-radius: 24px;
+    }
+
+    .auth-card h2 {
+        font-size: 26px;
+        margin: 10px 0 22px 0;
+    }
+
+    .auth-tabs button {
+        font-size: 14px;
+        padding: 12px 8px;
+    }
+
+    .auth-card input {
+        padding: 13px 16px;
+        font-size: 14px;
+    }
+
+    .toggle-password {
+        right: 12px;
+        width: 28px;
+        height: 28px;
+        font-size: 18px;
+    }
+
+    .submit-btn {
+        font-size: 16px;
+        padding: 14px;
+    }
+
+    .switch-text {
+        font-size: 14px;
+    }
+}
+
+/* small extra polish for very narrow screens */
+@media (max-width: 380px) {
+    .auth-card {
+        padding: 20px 14px;
+    }
+
+    .auth-card h2 {
+        font-size: 22px;
+    }
+
+    .auth-tabs {
+        flex-direction: column;
+        gap: 5px;
+        background: transparent;
+        padding: 0;
+    }
+
+    .auth-tabs button {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        padding: 12px;
+    }
+
+    .auth-tabs button.active {
+        background: #ffffff;
+    }
+}
