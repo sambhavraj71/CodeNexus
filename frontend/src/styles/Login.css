@@ -1,294 +1,559 @@
-/* Google Font */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+/* Login.css - Ultimate Modern Login Styles */
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-}
-
-body {
-    background: linear-gradient(135deg, #4facfe, #00f2fe);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .auth-container {
-    width: 100%;
-    max-width: 460px;
-    margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
 }
 
+/* Animated Background */
+.auth-container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: 
+    radial-gradient(circle at 30% 40%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 70% 60%, rgba(118, 75, 162, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 50% 80%, rgba(46, 204, 113, 0.08) 0%, transparent 50%);
+  animation: bgMove 20s ease-in-out infinite alternate;
+  z-index: 0;
+}
+
+@keyframes bgMove {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate(2%, 2%) rotate(5deg);
+  }
+}
+
+/* Floating Particles */
+.auth-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.2), transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.15), transparent),
+    radial-gradient(2px 2px at 60px 20px, rgba(255, 255, 255, 0.2), transparent),
+    radial-gradient(3px 3px at 80px 50px, rgba(255, 255, 255, 0.1), transparent),
+    radial-gradient(2px 2px at 100px 80px, rgba(255, 255, 255, 0.2), transparent);
+  background-size: 200px 200px;
+  animation: particles 30s linear infinite;
+  z-index: 0;
+  opacity: 0.5;
+}
+
+@keyframes particles {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 200px 200px;
+  }
+}
+
+/* Glassmorphism Card */
 .auth-card {
-    background: rgba(255, 255, 255, 0.13);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    border-radius: 28px;
-    padding: 40px 35px;
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12), 0 8px 16px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 30px;
+  padding: 45px 40px;
+  width: 100%;
+  max-width: 440px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 25px 60px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 1;
+  animation: slideUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-.auth-card h2 {
-    text-align: center;
-    color: #ffffff;
-    margin: 18px 0 28px 0;
-    font-size: 30px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
-/* ----- Tabs ----- */
+/* Glowing Border Effect */
+.auth-card::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 32px;
+  background: linear-gradient(45deg, #667eea, #764ba2, #2ecc71, #667eea);
+  background-size: 400% 400%;
+  z-index: -1;
+  animation: borderGlow 6s ease-in-out infinite;
+  opacity: 0.5;
+}
+
+@keyframes borderGlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Tabs */
 .auth-tabs {
-    display: flex;
-    background: rgba(255, 255, 255, 0.35);
-    border-radius: 14px;
-    overflow: hidden;
-    padding: 4px;
-    gap: 4px;
+  display: flex;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 5px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .auth-tabs button {
-    flex: 1;
-    border: none;
-    padding: 13px 10px;
-    background: transparent;
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: 600;
-    border-radius: 11px;
-    transition: all 0.25s ease;
-    color: #1a2a3a;
-    letter-spacing: 0.3px;
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  font-family: inherit;
+  letter-spacing: 0.5px;
 }
 
 .auth-tabs button.active {
-    background: #ffffff;
-    color: #007bff;
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.25);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  transform: scale(1.02);
 }
 
 .auth-tabs button:hover:not(.active) {
-    background: rgba(255, 255, 255, 0.35);
-    color: #0a1a2a;
+  color: white;
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.auth-tabs button:focus-visible {
-    outline: 2px solid #ffffff;
-    outline-offset: 2px;
+/* Heading */
+.auth-card h2 {
+  color: white;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 30px;
+  text-align: center;
+  background: linear-gradient(135deg, #ffffff 0%, #a8b4ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
 }
 
-/* ----- Inputs ----- */
+/* Input Fields */
 .auth-card input {
-    width: 100%;
-    padding: 14px 18px;
-    border: none;
-    outline: none;
-    border-radius: 14px;
-    margin-top: 18px;
-    font-size: 15px;
-    background: #ffffff;
-    color: #1e2a3a;
-    transition: box-shadow 0.2s, transform 0.15s;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
-}
-
-.auth-card input:focus {
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5), 0 4px 12px rgba(0, 0, 0, 0.08);
-    transform: scale(1.01);
+  width: 100%;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  color: white;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  outline: none;
 }
 
 .auth-card input::placeholder {
-    color: #8a9aa8;
-    font-weight: 400;
-    opacity: 0.7;
+  color: rgba(255, 255, 255, 0.4);
 }
 
-/* ----- Password box (relative) ----- */
+.auth-card input:focus {
+  border-color: #667eea;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+}
+
+.auth-card input:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Password Box */
 .password-box {
-    position: relative;
-    width: 100%;
+  position: relative;
+  width: 100%;
+  margin-bottom: 20px;
 }
 
 .password-box input {
-    padding-right: 52px;
+  margin-bottom: 0;
+  padding-right: 50px;
 }
 
-/* toggle icon – fixed alignment */
 .toggle-password {
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    font-size: 20px;
-    color: #4a5a6a;
-    user-select: none;
-    transition: color 0.2s;
-    line-height: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: transparent;
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .toggle-password:hover {
-    color: #007bff;
-    background: rgba(0, 123, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+  transform: translateY(-50%) scale(1.1);
 }
 
-/* ----- Submit button ----- */
+/* Institute Code Field */
+.institute-code-field {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.institute-code-field input {
+  margin-bottom: 8px;
+}
+
+.code-hint {
+  display: block;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.8rem;
+  padding-left: 4px;
+  transition: color 0.3s ease;
+}
+
+.code-hint:hover {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Submit Button */
 .submit-btn {
-    width: 100%;
-    margin-top: 28px;
-    padding: 15px;
-    border: none;
-    border-radius: 14px;
-    background: #007bff;
-    color: white;
-    font-size: 17px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    box-shadow: 0 6px 18px rgba(0, 123, 255, 0.3);
-    letter-spacing: 0.4px;
+  width: 100%;
+  padding: 18px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  margin-top: 10px;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.5px;
+  font-family: inherit;
+}
+
+.submit-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: 0.6s;
 }
 
 .submit-btn:hover {
-    background: #0056d6;
-    transform: translateY(-3px);
-    box-shadow: 0 10px 28px rgba(0, 123, 255, 0.35);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+}
+
+.submit-btn:hover::before {
+  left: 100%;
 }
 
 .submit-btn:active {
-    transform: translateY(0px);
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.25);
+  transform: translateY(-1px) scale(0.98);
 }
 
-.submit-btn:focus-visible {
-    outline: 3px solid rgba(255, 255, 255, 0.7);
-    outline-offset: 2px;
-}
-
-/* ----- Switch text (toggle login/register) ----- */
+/* Switch Text */
 .switch-text {
-    margin-top: 28px;
-    text-align: center;
-    color: #ffffff;
-    font-size: 15px;
-    font-weight: 400;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.95rem;
 }
 
 .switch-text span {
-    color: #f9f871;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.2s;
-    padding: 0 4px;
-    border-bottom: 2px solid transparent;
+  color: #667eea;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 
 .switch-text span:hover {
-    color: #fff9b0;
-    border-bottom-color: #f9f871;
-    text-decoration: none;
+  color: #8b7cf7;
+  text-decoration: underline;
 }
 
-/* ----- Footer ----- */
-.footer {
-    margin-top: 28px;
-    text-align: center;
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 13px;
-    letter-spacing: 0.3px;
+/* Admin Login Links */
+.admin-login-link {
+  margin-top: 12px;
+  width: 100%;
 }
 
-.footer a {
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: 500;
-    border-bottom: 1px dotted rgba(255, 255, 255, 0.3);
-    transition: 0.2s;
+.admin-link-btn {
+  width: 100%;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.7);
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
-.footer a:hover {
-    color: #f9f871;
-    border-bottom-color: #f9f871;
+.admin-link-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  transform: translateY(-2px);
 }
 
-/* ----- Responsive (mobile first) ----- */
-@media (max-width: 500px) {
-    .auth-card {
-        padding: 28px 20px;
-        border-radius: 24px;
-    }
-
-    .auth-card h2 {
-        font-size: 26px;
-        margin: 10px 0 22px 0;
-    }
-
-    .auth-tabs button {
-        font-size: 14px;
-        padding: 12px 8px;
-    }
-
-    .auth-card input {
-        padding: 13px 16px;
-        font-size: 14px;
-    }
-
-    .toggle-password {
-        right: 12px;
-        width: 28px;
-        height: 28px;
-        font-size: 18px;
-    }
-
-    .submit-btn {
-        font-size: 16px;
-        padding: 14px;
-    }
-
-    .switch-text {
-        font-size: 14px;
-    }
+.admin-link-btn:active {
+  transform: scale(0.98);
 }
 
-/* small extra polish for very narrow screens */
-@media (max-width: 380px) {
-    .auth-card {
-        padding: 20px 14px;
-    }
+/* Divider */
+.admin-divider {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 20px 0 15px;
+}
 
-    .auth-card h2 {
-        font-size: 22px;
-    }
+.admin-divider::before,
+.admin-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
 
-    .auth-tabs {
-        flex-direction: column;
-        gap: 5px;
-        background: transparent;
-        padding: 0;
-    }
+.admin-divider span {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
 
-    .auth-tabs button {
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 12px;
-        padding: 12px;
-    }
+/* Responsive Design */
+@media (max-width: 768px) {
+  .auth-card {
+    padding: 35px 25px;
+    border-radius: 24px;
+  }
 
-    .auth-tabs button.active {
-        background: #ffffff;
-    }
+  .auth-card h2 {
+    font-size: 1.7rem;
+  }
+
+  .auth-tabs button {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+
+  .auth-card input {
+    padding: 14px 18px;
+    font-size: 0.95rem;
+  }
+
+  .submit-btn {
+    padding: 16px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 15px;
+  }
+
+  .auth-card {
+    padding: 25px 18px;
+    border-radius: 20px;
+  }
+
+  .auth-card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 25px;
+  }
+
+  .auth-tabs button {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+
+  .auth-card input {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    border-radius: 12px;
+  }
+
+  .submit-btn {
+    padding: 14px;
+    font-size: 0.95rem;
+    border-radius: 12px;
+  }
+
+  .admin-link-btn {
+    padding: 12px;
+    font-size: 0.85rem;
+  }
+
+  .switch-text {
+    font-size: 0.85rem;
+  }
+
+  .toggle-password {
+    font-size: 1rem;
+    right: 14px;
+  }
+}
+
+/* Dark Mode Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.8);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #764ba2, #667eea);
+}
+
+/* Loading State Animation */
+.submit-btn.loading {
+  position: relative;
+  color: transparent;
+}
+
+.submit-btn.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* Input Validation States */
+.auth-card input.error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+}
+
+.auth-card input.success {
+  border-color: #2ecc71;
+  box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.1);
+}
+
+/* Error Message */
+.error-message {
+  color: #ef4444;
+  font-size: 0.85rem;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  padding-left: 4px;
+}
+
+/* Success Message */
+.success-message {
+  color: #2ecc71;
+  font-size: 0.85rem;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  padding-left: 4px;
+}
+
+/* Focus Visible for Accessibility */
+.auth-card input:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+.submit-btn:focus-visible,
+.admin-link-btn:focus-visible,
+.auth-tabs button:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* Reduce Motion */
+@media (prefers-reduced-motion: reduce) {
+  .auth-container::before,
+  .auth-container::after {
+    animation: none;
+  }
+  
+  .auth-card {
+    animation: none;
+  }
+  
+  .auth-card::before {
+    animation: none;
+  }
 }
