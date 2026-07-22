@@ -16,7 +16,7 @@ load_dotenv()
 
 
 origins = [
-    "https://your-frontend-url.onrender.com",  # Replace with your frontend URL
+    "https://skill-rank.onrender.com",  # Replace with your frontend URL
     "http://localhost:5173",
     "http://localhost:3000",
 ]
