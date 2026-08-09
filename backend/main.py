@@ -16,7 +16,7 @@ load_dotenv()
 
 
 origins = [
-    "https://codenexus-nodt.onrender.com/",  
+    "https://codenexus-nodt.onrender.com",
     "http://localhost:5173",
     "http://localhost:3000",
 ]
