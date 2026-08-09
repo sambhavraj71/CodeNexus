@@ -1,10 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import '../styles/QuizPlay.css';
+import {useRef} from 'react';
+import { useFullscreen } from '../contexts/FullscreenContext';
 
 const API = "https://codenexus-backend-0we9.onrender.com";
 
 const QuizPlay = () => {
+   const {
+    isFullscreen,
+    enterFullscreen
+  } = useFullscreen();
+
+  const [fullscreenRequired, setFullscreenRequired] = useState(true);
+
+  const quizStartedRef = useRef(false);
+  const quizEndedRef = useRef(false);
   const { quizId } = useParams();
   const navigate = useNavigate();
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -238,6 +249,79 @@ const QuizPlay = () => {
       }
     ]
   };
+  useEffect(() => {
+  const startFullscreen = async () => {
+    // Already fullscreen hai
+    if (
+      document.fullscreenElement ||
+      document.webkitFullscreenElement ||
+      document.msFullscreenElement
+    ) {
+      setFullscreenRequired(false);
+      quizStartedRef.current = true;
+      return;
+    }
+
+    // Browser permission try karo
+    const success = await enterFullscreen();
+
+    if (success) {
+      setFullscreenRequired(false);
+      quizStartedRef.current = true;
+    } else {
+      // Browser ne automatic fullscreen block kar diya
+      setFullscreenRequired(true);
+    }
+  };
+
+  startFullscreen();
+}, [enterFullscreen]);
+
+useEffect(() => {
+  const handleFullscreenExit = () => {
+    const currentlyFullscreen =
+      document.fullscreenElement ||
+      document.webkitFullscreenElement ||
+      document.msFullscreenElement;
+
+    if (!currentlyFullscreen) {
+      setFullscreenRequired(true);
+
+      if (
+        quizStartedRef.current &&
+        !quizEndedRef.current
+      ) {
+        quizEndedRef.current = true;
+
+        handleFinishQuiz(score);
+      }
+    } else {
+      setFullscreenRequired(false);
+    }
+  };
+
+  document.addEventListener(
+    "fullscreenchange",
+    handleFullscreenExit
+  );
+
+  document.addEventListener(
+    "webkitfullscreenchange",
+    handleFullscreenExit
+  );
+
+  return () => {
+    document.removeEventListener(
+      "fullscreenchange",
+      handleFullscreenExit
+    );
+
+    document.removeEventListener(
+      "webkitfullscreenchange",
+      handleFullscreenExit
+    );
+  };
+}, [score]);
 
   // Timer logic
   useEffect(() => {
@@ -460,7 +544,44 @@ const QuizPlay = () => {
     if (timeRemaining <= 60) return '⏳ Less than a minute left';
     return '';
   };
+  if (fullscreenRequired && !isComplete) {
+  return (
+    <div className="fullscreen-required">
+      <div className="fullscreen-card">
 
+        <div className="fullscreen-icon">
+          ⛶
+        </div>
+
+        <h1>Fullscreen Required</h1>
+
+        <p>
+          This assessment must be taken in fullscreen mode.
+        </p>
+
+        <p className="fullscreen-warning">
+          ⚠️ Exiting fullscreen during the quiz will
+          automatically submit your quiz.
+        </p>
+
+        <button
+          className="fullscreen-start-btn"
+          onClick={async () => {
+            const success = await enterFullscreen();
+
+            if (success) {
+              setFullscreenRequired(false);
+              quizStartedRef.current = true;
+            }
+          }}
+        >
+          ⛶ Enter Fullscreen & Start Quiz
+        </button>
+
+      </div>
+    </div>
+  );
+}
   if (loading) {
     return (
       <div className="quiz-play-container">

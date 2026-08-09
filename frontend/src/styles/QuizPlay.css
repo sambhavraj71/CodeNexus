@@ -1198,3 +1198,80 @@
     display: none;
   }
 }
+
+.fullscreen-required {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #0f172a;
+  padding: 20px;
+}
+
+.fullscreen-card {
+  width: 100%;
+  max-width: 500px;
+  background: white;
+  border-radius: 20px;
+  padding: 45px 35px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.fullscreen-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 25px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: #eef2ff;
+
+  font-size: 40px;
+}
+
+.fullscreen-card h1 {
+  margin-bottom: 12px;
+  font-size: 28px;
+}
+
+.fullscreen-card p {
+  color: #64748b;
+  margin-bottom: 15px;
+}
+
+.fullscreen-warning {
+  color: #dc2626 !important;
+  font-weight: 600;
+  background: #fef2f2;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.fullscreen-start-btn {
+  width: 100%;
+  margin-top: 20px;
+
+  padding: 14px 20px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: #4f46e5;
+  color: white;
+
+  font-size: 16px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.fullscreen-start-btn:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
