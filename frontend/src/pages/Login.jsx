@@ -9,7 +9,6 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 function Login() {
     const navigate = useNavigate();
     const API = "https://codenexus-backend-0we9.onrender.com";
-";
     const [isLogin, setIsLogin] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
