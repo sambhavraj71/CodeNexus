@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "../styles/SuperAdminDashboard.css";
 
-const API = "http://127.0.0.1:8000";
+const API = "https://codenexus-backend-0we9.onrender.com";
 
 const SuperAdminDashboard = () => {
   const navigate = useNavigate();

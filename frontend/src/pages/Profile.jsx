@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Profile.css';
 
-const API = "http://127.0.0.1:8000";
+const API = "https://codenexus-backend-0we9.onrender.com";
 
 const Profile = () => {
   const [user, setUser] = useState(null);

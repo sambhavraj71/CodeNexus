@@ -6,7 +6,7 @@ import "../styles/Login.css";
 
 function SuperAdminLogin() {
     const navigate = useNavigate();
-    const API = "http://127.0.0.1:8000";
+    const API = "https://codenexus-backend-0we9.onrender.com";
 
     const [showPassword, setShowPassword] = useState(false);
 
