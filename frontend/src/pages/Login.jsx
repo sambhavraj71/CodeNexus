@@ -8,7 +8,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function Login() {
     const navigate = useNavigate();
-    const API = "http://127.0.0.1:8000 || https://codenexus-backend-0we9.onrender.com
+    const API = "https://codenexus-backend-0we9.onrender.com
 ";
     const [isLogin, setIsLogin] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
