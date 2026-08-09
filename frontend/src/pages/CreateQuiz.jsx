@@ -10,6 +10,7 @@ const CreateQuiz = () => {
   const [quizTitle, setQuizTitle] = useState('');
   const [domain, setDomain] = useState('');
   const [quizType, setQuizType] = useState('global');
+  const [duration, setDuration] = useState(300); // Default 5 minutes
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState({
     q: '',
@@ -138,6 +139,12 @@ const CreateQuiz = () => {
     setJsonInput(JSON.stringify(sample, null, 2));
   };
 
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}m ${secs}s`;
+  };
+
   const handleSubmit = async () => {
     if (!quizTitle.trim()) {
       setMessage({ type: 'error', text: 'Please enter a quiz title' });
@@ -151,12 +158,21 @@ const CreateQuiz = () => {
       setMessage({ type: 'error', text: 'Please add at least one question' });
       return;
     }
+    if (duration < 60) {
+      setMessage({ type: 'error', text: 'Minimum duration is 60 seconds (1 minute)' });
+      return;
+    }
+    if (duration > 7200) {
+      setMessage({ type: 'error', text: 'Maximum duration is 7200 seconds (2 hours)' });
+      return;
+    }
 
     setLoading(true);
     try {
       const payload = {
         title: quizTitle,
         domain: domain,
+        duration: duration,
         questions: questions,
         created_by: user.username,
         institute_id: quizType === 'institute' ? user.instituteId : null
@@ -239,6 +255,73 @@ const CreateQuiz = () => {
               >
                 🏫 Institute Quiz
               </button>
+            </div>
+          </div>
+
+          {/* Duration Section */}
+          <div className="form-group duration-section">
+            <label>⏱️ Time Duration</label>
+            <div className="duration-input-group">
+              <div className="duration-slider-container">
+                <input
+                  type="range"
+                  min="60"
+                  max="7200"
+                  step="30"
+                  value={duration}
+                  onChange={(e) => setDuration(parseInt(e.target.value))}
+                  className="duration-slider"
+                  style={{
+                    background: `linear-gradient(to right, #6366f1 0%, #6366f1 ${(duration / 7200) * 100}%, rgba(255,255,255,0.1) ${(duration / 7200) * 100}%, rgba(255,255,255,0.1) 100%)`
+                  }}
+                />
+                <div className="duration-labels">
+                  <span>1m</span>
+                  <span>30m</span>
+                  <span>60m</span>
+                  <span>120m</span>
+                </div>
+              </div>
+              <div className="duration-display">
+                <span className="duration-value">{formatTime(duration)}</span>
+                <div className="duration-presets">
+                  <button 
+                    type="button" 
+                    className={`preset-btn ${duration === 60 ? 'active' : ''}`}
+                    onClick={() => setDuration(60)}
+                  >
+                    1m
+                  </button>
+                  <button 
+                    type="button" 
+                    className={`preset-btn ${duration === 300 ? 'active' : ''}`}
+                    onClick={() => setDuration(300)}
+                  >
+                    5m
+                  </button>
+                  <button 
+                    type="button" 
+                    className={`preset-btn ${duration === 600 ? 'active' : ''}`}
+                    onClick={() => setDuration(600)}
+                  >
+                    10m
+                  </button>
+                  <button 
+                    type="button" 
+                    className={`preset-btn ${duration === 1800 ? 'active' : ''}`}
+                    onClick={() => setDuration(1800)}
+                  >
+                    30m
+                  </button>
+                  <button 
+                    type="button" 
+                    className={`preset-btn ${duration === 3600 ? 'active' : ''}`}
+                    onClick={() => setDuration(3600)}
+                  >
+                    60m
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 

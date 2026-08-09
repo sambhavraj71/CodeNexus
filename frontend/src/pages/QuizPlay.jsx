@@ -16,8 +16,18 @@ const QuizPlay = () => {
   const [finalScore, setFinalScore] = useState(0);
   const [optionStyles, setOptionStyles] = useState({});
   const [loading, setLoading] = useState(true);
+  
+  // Timer states
+  const [timeRemaining, setTimeRemaining] = useState(0);
+  const [totalDuration, setTotalDuration] = useState(0);
+  const [isTimeUp, setIsTimeUp] = useState(false);
+  
+  // Navigation states
+  const [markedForReview, setMarkedForReview] = useState({});
+  const [selectedAnswers, setSelectedAnswers] = useState({});
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  // Fallback quizzes (for backward compatibility)
+  // Fallback quizzes
   const fallbackQuizzes = {
     climate: [
       {
@@ -229,22 +239,69 @@ const QuizPlay = () => {
     ]
   };
 
+  // Timer logic
+  useEffect(() => {
+    if (!quizData || isComplete || isTimeUp) return;
+
+    const timer = setInterval(() => {
+      setTimeRemaining(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setIsTimeUp(true);
+          handleFinishQuiz(score);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [quizData, isComplete, isTimeUp]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (isComplete || locked || isTimeUp || !quizData) return;
+      
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (currentQuestion < quizData.length - 1) {
+          setCurrentQuestion(prev => prev + 1);
+          setOptionStyles({});
+        }
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (currentQuestion > 0) {
+          setCurrentQuestion(prev => prev - 1);
+          setOptionStyles({});
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [currentQuestion, isComplete, locked, isTimeUp, quizData]);
+
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        // If quizId is provided, fetch from backend
         if (quizId) {
           const res = await fetch(`${API}/quiz/${quizId}`);
           if (!res.ok) throw new Error('Quiz not found');
           const data = await res.json();
           setQuizData(data.quiz.questions);
           setDomain(data.quiz.domain);
+          // Set timer from quiz data
+          const duration = data.quiz.duration || 300;
+          setTimeRemaining(duration);
+          setTotalDuration(duration);
         } else {
-          // Fallback: Check localStorage for domain
           const storedDomain = localStorage.getItem("quizDomain");
           if (storedDomain && fallbackQuizzes[storedDomain]) {
             setQuizData(fallbackQuizzes[storedDomain]);
             setDomain(storedDomain);
+            setTimeRemaining(300);
+            setTotalDuration(300);
           } else {
             navigate('/quiz');
             return;
@@ -275,43 +332,11 @@ const QuizPlay = () => {
     }
   };
 
-  const handleSelectAnswer = (selected) => {
-    if (locked || !quizData) return;
+  const handleFinishQuiz = async (finalScoreValue) => {
+    if (isComplete) return;
     
-    const currentQ = quizData[currentQuestion];
-    const correct = selected === currentQ.c;
-    
-    setLocked(true);
-    
-    // Update option styles
-    const styles = {};
-    currentQ.a.forEach((_, idx) => {
-      if (idx === currentQ.c) {
-        styles[idx] = 'correct';
-      } else if (idx === selected && !correct) {
-        styles[idx] = 'incorrect';
-      }
-    });
-    setOptionStyles(styles);
-
-    if (correct) {
-      setScore(prev => prev + 1);
-    }
-
-    setTimeout(() => {
-      if (currentQuestion + 1 < quizData.length) {
-        setCurrentQuestion(prev => prev + 1);
-        setLocked(false);
-        setOptionStyles({});
-      } else {
-        handleFinishQuiz();
-      }
-    }, 800);
-  };
-
-  const handleFinishQuiz = async () => {
     setIsComplete(true);
-    setFinalScore(score);
+    setFinalScore(finalScoreValue);
 
     const currentUser = JSON.parse(localStorage.getItem("currentUser"));
     if (!currentUser) {
@@ -326,7 +351,7 @@ const QuizPlay = () => {
         body: JSON.stringify({
           username: currentUser.username,
           domain: domain || "general",
-          score: score
+          score: finalScoreValue
         })
       });
 
@@ -338,22 +363,109 @@ const QuizPlay = () => {
       }
 
       await refreshUser();
-      alert("🎉 Quiz completed! Your score has been saved.");
+      
+      if (isTimeUp) {
+        alert("⏰ Time's up! Your quiz has been auto-submitted.");
+      }
     } catch (err) {
       console.error("Error submitting quiz:", err);
       alert("Error submitting quiz. Please try again.");
     }
   };
 
+  const handleSelectAnswer = (selected) => {
+    if (locked || !quizData || isTimeUp) return;
+    
+    const currentQ = quizData[currentQuestion];
+    const correct = selected === currentQ.c;
+    
+    setLocked(true);
+    
+    const styles = {};
+    currentQ.a.forEach((_, idx) => {
+      if (idx === currentQ.c) {
+        styles[idx] = 'correct';
+      } else if (idx === selected && !correct) {
+        styles[idx] = 'incorrect';
+      }
+    });
+    setOptionStyles(styles);
+
+    setSelectedAnswers(prev => ({
+      ...prev,
+      [currentQuestion]: selected
+    }));
+
+    const newScore = correct ? score + 1 : score;
+    setScore(newScore);
+
+    setTimeout(() => {
+      if (currentQuestion + 1 < quizData.length && !isTimeUp) {
+        setCurrentQuestion(prev => prev + 1);
+        setLocked(false);
+        setOptionStyles({});
+      } else {
+        handleFinishQuiz(newScore);
+      }
+    }, 800);
+  };
+
+  const goToQuestion = (index) => {
+    if (locked || isTimeUp) return;
+    if (index >= 0 && index < quizData.length) {
+      setCurrentQuestion(index);
+      setOptionStyles({});
+    }
+  };
+
+  const toggleMarkForReview = () => {
+    if (locked || isTimeUp) return;
+    const current = markedForReview[currentQuestion];
+    setMarkedForReview(prev => ({
+      ...prev,
+      [currentQuestion]: !current
+    }));
+  };
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const getQuestionStatus = (index) => {
+    if (index === currentQuestion) return 'current';
+    if (markedForReview[index]) return 'review';
+    if (selectedAnswers[index] !== undefined) return 'answered';
+    return 'unanswered';
+  };
+
   const goToDashboard = () => {
     navigate('/dashboard');
   };
 
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  };
+
+  const getTimerColor = () => {
+    if (timeRemaining <= 60) return '#ef4444';
+    if (timeRemaining <= 300) return '#fbbf24';
+    return '#10b981';
+  };
+
+  const getTimerWarning = () => {
+    if (timeRemaining <= 10) return '⚠️ Time running out!';
+    if (timeRemaining <= 30) return '⏰ Hurry up!';
+    if (timeRemaining <= 60) return '⏳ Less than a minute left';
+    return '';
+  };
+
   if (loading) {
     return (
-      <div className="quiz-play-page">
-        <div className="loading-spinner">
-          <div className="loader"></div>
+      <div className="quiz-play-container">
+        <div className="loading-wrapper">
+          <div className="loader-spinner"></div>
           <p>Loading quiz...</p>
         </div>
       </div>
@@ -362,8 +474,8 @@ const QuizPlay = () => {
 
   if (!quizData) {
     return (
-      <div className="quiz-play-page">
-        <div className="error-container">
+      <div className="quiz-play-container">
+        <div className="error-wrapper">
           <p>No quiz data available.</p>
           <button onClick={() => navigate('/quiz')}>Back to Quizzes</button>
         </div>
@@ -371,92 +483,260 @@ const QuizPlay = () => {
     );
   }
 
-  if (isComplete) {
+  if (isComplete || isTimeUp) {
+    const percentage = Math.round((finalScore / quizData.length) * 100);
     return (
-      <div className="quiz-play-page">
-        <div className="result-container">
-          <div className="result-icon">🎉</div>
-          <h2>Quiz Completed!</h2>
-          <div className="result-score">
-            <span className="score-label">Your Score:</span>
-            <span className="score-value">{finalScore}</span>
-            <span className="score-total">/ {quizData.length}</span>
+      <div className="quiz-play-container">
+        <div className="result-wrapper">
+          <div className="result-card">
+            <div className="result-icon">{isTimeUp ? '⏰' : '🎉'}</div>
+            <h2>{isTimeUp ? "Time's Up!" : "Quiz Completed!"}</h2>
+            <p className="result-subtitle">
+              {isTimeUp ? "Your quiz was auto-submitted" : "Great effort!"}
+            </p>
+            <div className="result-score">
+              <span className="score-label">Your Score:</span>
+              <span className="score-value">{finalScore}</span>
+              <span className="score-total">/ {quizData.length}</span>
+            </div>
+            <div className="result-percentage">{percentage}%</div>
+            <button className="result-btn" onClick={goToDashboard}>
+              Go to Dashboard
+            </button>
           </div>
-          <div className="result-percentage">
-            {Math.round((finalScore / quizData.length) * 100)}%
-          </div>
-          <button className="result-btn" onClick={goToDashboard}>
-            Go to Dashboard
-          </button>
         </div>
       </div>
     );
   }
 
   const currentQ = quizData[currentQuestion];
+  const totalQuestions = quizData.length;
+  const answeredCount = Object.keys(selectedAnswers).length;
+  const reviewCount = Object.values(markedForReview).filter(v => v).length;
 
   return (
-    <div className="quiz-play-page" data-domain={domain}>
-      <div className="quiz-header-bar">
-        <button className="quit-btn" onClick={() => navigate('/quiz')}>
-          ✕ Quit
-        </button>
-        <div className="quiz-progress">
-          <span className="progress-text">
-            {currentQuestion + 1} / {quizData.length}
-          </span>
-          <div className="progress-bar-container">
-            <div 
-              className="progress-bar-fill" 
-              style={{ width: `${((currentQuestion + 1) / quizData.length) * 100}%` }}
-            ></div>
+    <div className="quiz-play-container" data-domain={domain}>
+      {/* Top Bar */}
+      <header className="quiz-topbar">
+        <div className="topbar-left">
+          <button className="toggle-sidebar" onClick={toggleSidebar}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M3 12h18M3 6h18M3 18h18"/>
+            </svg>
+          </button>
+          <div className="quiz-brand">
+            <span className="brand-dot red"></span>
+            <span className="brand-dot yellow"></span>
+            <span className="brand-dot green"></span>
+            <span className="brand-name">Skill Rank</span>
           </div>
         </div>
-        <div className="quiz-score-display">
-          <span className="score-icon">⭐</span>
-          <span className="score-text">{score}</span>
+        <div className="topbar-center">
+          <span className="quiz-title">{domain || 'Assessment'}</span>
         </div>
+        <div className="topbar-right">
+          <div className="topbar-stats">
+            <span className="stat-badge timer" style={{ color: getTimerColor() }}>
+              <span className="stat-icon">⏱️</span>
+              <span className="stat-value timer-value">
+                {formatTime(timeRemaining)}
+              </span>
+            </span>
+            <span className="stat-badge">
+              <span className="stat-icon">⭐</span>
+              <span className="stat-value">{score}</span>
+            </span>
+            <span className="stat-badge">
+              <span className="stat-icon">📝</span>
+              <span className="stat-value">{answeredCount}/{totalQuestions}</span>
+            </span>
+          </div>
+          {getTimerWarning() && (
+            <span className="timer-warning">{getTimerWarning()}</span>
+          )}
+          <button className="exit-btn" onClick={() => {
+            if (window.confirm('Are you sure you want to quit? Your progress will be lost.')) {
+              navigate('/quiz');
+            }
+          }}>
+            ✕
+          </button>
+        </div>
+      </header>
+
+      {/* Timer Progress Bar */}
+      <div className="timer-progress-bar">
+        <div 
+          className="timer-progress-fill"
+          style={{
+            width: `${(timeRemaining / totalDuration) * 100}%`,
+            background: timeRemaining <= 60 ? '#ef4444' : 
+                       timeRemaining <= 300 ? '#fbbf24' : '#6366f1'
+          }}
+        />
       </div>
 
-      <div className="question-container">
-        <div className="domain-badge">
-          {domain || 'General'}
-        </div>
-        <h2 className="question-text">{currentQ.q}</h2>
-        <div className="options-container">
-          {currentQ.a.map((option, idx) => {
-            let className = 'quiz-option';
-            if (optionStyles[idx] === 'correct') {
-              className += ' correct';
-            } else if (optionStyles[idx] === 'incorrect') {
-              className += ' incorrect';
-            }
-            
-            return (
-              <button
-                key={idx}
-                className={className}
-                onClick={() => handleSelectAnswer(idx)}
-                disabled={locked}
+      <div className="quiz-main">
+        {/* Main Content */}
+        <main className={`quiz-content ${!isSidebarOpen ? 'expanded' : ''}`}>
+          <div className="question-card">
+            <div className="question-header">
+              <div className="question-meta">
+                <span className="question-number">Question {currentQuestion + 1} of {totalQuestions}</span>
+                <span className="question-domain">{domain || 'General'}</span>
+              </div>
+              <button 
+                className={`mark-review-btn ${markedForReview[currentQuestion] ? 'marked' : ''}`}
+                onClick={toggleMarkForReview}
+                disabled={locked || isTimeUp}
               >
-                <span className="option-letter">
-                  {String.fromCharCode(65 + idx)}
-                </span>
-                <span className="option-text">{option}</span>
-                {optionStyles[idx] === 'correct' && (
-                  <span className="option-check">✓</span>
-                )}
-                {optionStyles[idx] === 'incorrect' && (
-                  <span className="option-cross">✗</span>
-                )}
+                <svg width="16" height="16" viewBox="0 0 24 24" fill={markedForReview[currentQuestion] ? '#fbbf24' : 'none'} stroke="currentColor" strokeWidth="2">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                {markedForReview[currentQuestion] ? 'Marked for Review' : 'Mark for Review'}
               </button>
-            );
-          })}
-        </div>
+            </div>
+
+            <h3 className="question-text">{currentQ.q}</h3>
+            
+            <div className="options-grid">
+              {currentQ.a.map((option, idx) => {
+                const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+                let className = 'option-btn';
+                if (optionStyles[idx] === 'correct') {
+                  className += ' correct';
+                } else if (optionStyles[idx] === 'incorrect') {
+                  className += ' incorrect';
+                }
+                
+                return (
+                  <button
+                    key={idx}
+                    className={className}
+                    onClick={() => handleSelectAnswer(idx)}
+                    disabled={locked || isTimeUp}
+                  >
+                    <span className="option-label">{letters[idx]}</span>
+                    <span className="option-content">{option}</span>
+                    {optionStyles[idx] === 'correct' && (
+                      <span className="option-status correct">✓</span>
+                    )}
+                    {optionStyles[idx] === 'incorrect' && (
+                      <span className="option-status incorrect">✗</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="question-footer">
+              <button 
+                className="nav-btn prev"
+                onClick={() => {
+                  if (currentQuestion > 0 && !locked && !isTimeUp) {
+                    setCurrentQuestion(prev => prev - 1);
+                    setOptionStyles({});
+                  }
+                }}
+                disabled={currentQuestion === 0 || locked || isTimeUp}
+              >
+                ← Previous
+              </button>
+              <span className="question-indicator">
+                {currentQuestion + 1} / {totalQuestions}
+              </span>
+              {currentQuestion === totalQuestions - 1 ? (
+                <button 
+                  className="nav-btn submit"
+                  onClick={() => handleFinishQuiz(score)}
+                  disabled={locked || isTimeUp}
+                >
+                  Submit Quiz →
+                </button>
+              ) : (
+                <button 
+                  className="nav-btn next"
+                  onClick={() => {
+                    if (currentQuestion < totalQuestions - 1 && !locked && !isTimeUp) {
+                      setCurrentQuestion(prev => prev + 1);
+                      setOptionStyles({});
+                    }
+                  }}
+                  disabled={locked || isTimeUp}
+                >
+                  Next →
+                </button>
+              )}
+            </div>
+          </div>
+        </main>
+
+        {/* Right Sidebar - Question Navigator */}
+        <aside className={`question-navigator ${isSidebarOpen ? 'open' : 'closed'}`}>
+          <div className="navigator-header">
+            <h4>Questions</h4>
+            <span className="question-count">{totalQuestions}</span>
+          </div>
+
+          <div className="navigator-stats">
+            <div className="stat-row">
+              <span className="dot answered"></span>
+              <span>Answered</span>
+              <span className="count">{answeredCount}</span>
+            </div>
+            <div className="stat-row">
+              <span className="dot review"></span>
+              <span>For Review</span>
+              <span className="count">{reviewCount}</span>
+            </div>
+            <div className="stat-row">
+              <span className="dot unanswered"></span>
+              <span>Unanswered</span>
+              <span className="count">{totalQuestions - answeredCount - reviewCount}</span>
+            </div>
+          </div>
+
+          <div className="navigator-grid">
+            {quizData.map((_, index) => {
+              const status = getQuestionStatus(index);
+              return (
+                <button
+                  key={index}
+                  className={`nav-question ${status}`}
+                  onClick={() => goToQuestion(index)}
+                  disabled={locked || isTimeUp}
+                >
+                  <span>{index + 1}</span>
+                  {markedForReview[index] && (
+                    <span className="review-star">★</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="navigator-legend">
+            <div className="legend-item">
+              <span className="legend-dot current"></span>
+              <span>Current</span>
+            </div>
+            <div className="legend-item">
+              <span className="legend-dot answered"></span>
+              <span>Answered</span>
+            </div>
+            <div className="legend-item">
+              <span className="legend-dot review"></span>
+              <span>Review</span>
+            </div>
+            <div className="legend-item">
+              <span className="legend-dot unanswered"></span>
+              <span>Unanswered</span>
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   );
 };
 
-// IMPORTANT: Default export
 export default QuizPlay;

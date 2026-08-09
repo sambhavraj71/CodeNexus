@@ -76,6 +76,7 @@ class QuizCreate(BaseModel):
     questions: List[dict]
     created_by: str
     institute_id: Optional[str] = None
+    duration: Optional[int] = 300  # Duration in minutes
 
 
 # ---------------- HELPERS ----------------
@@ -361,6 +362,7 @@ def create_quiz(data: QuizCreate):
         "created_by": data.created_by,
         "institute_id": data.institute_id,  # None for global
         "is_global": data.institute_id is None,
+        "duration": data.duration,  
         "createdAt": str(datetime.now()),
         "updatedAt": str(datetime.now())
     }
