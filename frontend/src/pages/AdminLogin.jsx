@@ -7,7 +7,6 @@ import "../styles/AdminLogin.css";
 function AdminLogin() {
     const navigate = useNavigate();
     const API = "https://codenexus-backend-0we9.onrender.com";
-";
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         username: "",
