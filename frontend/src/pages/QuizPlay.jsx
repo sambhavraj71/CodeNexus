@@ -458,41 +458,36 @@ useEffect(() => {
   };
 
   const handleSelectAnswer = (selected) => {
-    if (locked || !quizData || isTimeUp) return;
-    
-    const currentQ = quizData[currentQuestion];
-    const correct = selected === currentQ.c;
-    
-    setLocked(true);
-    
-    const styles = {};
-    currentQ.a.forEach((_, idx) => {
-      if (idx === currentQ.c) {
-        styles[idx] = 'correct';
-      } else if (idx === selected && !correct) {
-        styles[idx] = 'incorrect';
-      }
-    });
-    setOptionStyles(styles);
+  if (locked || !quizData || isTimeUp) return;
 
-    setSelectedAnswers(prev => ({
-      ...prev,
-      [currentQuestion]: selected
-    }));
+  const currentQ = quizData[currentQuestion];
+  const correct = selected === currentQ.c;
 
-    const newScore = correct ? score + 1 : score;
-    setScore(newScore);
+  setLocked(true);
 
-    setTimeout(() => {
-      if (currentQuestion + 1 < quizData.length && !isTimeUp) {
-        setCurrentQuestion(prev => prev + 1);
-        setLocked(false);
-        setOptionStyles({});
-      } else {
-        handleFinishQuiz(newScore);
-      }
-    }, 800);
-  };
+  // Store selected answer
+  setSelectedAnswers(prev => ({
+    ...prev,
+    [currentQuestion]: selected
+  }));
+
+  // Update score internally
+  const newScore = correct ? score + 1 : score;
+  setScore(newScore);
+
+  // DO NOT show correct/incorrect answer
+  setOptionStyles({});
+
+  setTimeout(() => {
+    if (currentQuestion + 1 < quizData.length && !isTimeUp) {
+      setCurrentQuestion(prev => prev + 1);
+      setLocked(false);
+      setOptionStyles({});
+    } else {
+      handleFinishQuiz(newScore);
+    }
+  }, 300);
+};
 
   const goToQuestion = (index) => {
     if (locked || isTimeUp) return;
